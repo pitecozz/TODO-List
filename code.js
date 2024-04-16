@@ -5,11 +5,11 @@ if (localStorage.getItem('tasks')) {
   tasks = JSON.parse(localStorage.getItem('tasks'));
 }
 
-function saveTasks() {
+const saveTasks = () => {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-function renderTasks() {
+const renderTasks = () => {
   const taskList = document.getElementById('task-list');
   taskList.innerHTML = '';
   
@@ -54,7 +54,7 @@ function renderTasks() {
   });
 }
 
-function addTask() {
+const addTask = () => {
   const taskInput = document.getElementById('task-input');
   const text = taskInput.value.trim();
   if (text !== '') {
@@ -65,7 +65,7 @@ function addTask() {
   }
 }
 
-function hideCompletedTasks() {
+const hideCompletedTasks = () => {
   tasks = tasks.filter(task => !task.completed);
   saveTasks();
   renderTasks();
