@@ -7,14 +7,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="todo-container">
-        <h2>Lista de Tarefas</h2>
-        <ul id="task-list">
-        </ul>
-        <input type="text" id="task-input" placeholder="Adicione a tafefa...">
-        <button onclick="addTask()">Adicionar Tarefa</button>
-      </div>
-
+  <div class="container">
+    <h1>TODO List</h1>
+    <div id="task-list"></div>
+    <div class="input-container">
+      <input type="text" id="task-input" placeholder="Adicione uma nova tarefa">
+      <button onclick="addTask()">Adicionar</button>
+    </div>
+    <button onclick="hideCompletedTasks()" class="hide-completed">Ocultar Concluídas</button>
+  </div>
   <script src="code.js"></script>
 </body>
 </html>

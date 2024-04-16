@@ -1,61 +1,74 @@
-const taskList = document.getElementById('task-list');
-    const taskInput = document.getElementById('task-input');
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let tasks = [];
 
-    window.onload = function () {
-      tasks.forEach(task => {
-        renderTask(task.text, task.completed);
-      });
-    };
+// Carregar tarefas do armazenamento local
+if (localStorage.getItem('tasks')) {
+  tasks = JSON.parse(localStorage.getItem('tasks'));
+}
 
-    function saveTasks() {
-      localStorage.setItem('tasks', JSON.stringify(tasks));
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function renderTasks() {
+  const taskList = document.getElementById('task-list');
+  taskList.innerHTML = '';
+  
+  tasks.forEach((task, index) => {
+    const taskElement = document.createElement('div');
+    taskElement.textContent = task.text;
+    taskElement.classList.add('task');
+    if (task.completed) {
+      taskElement.classList.add('completed');
     }
-
-    function renderTask(text, completed = false) {
-      const taskItem = document.createElement('li');
-      taskItem.innerText = text;
-      if (completed) {
-        taskItem.classList.add('task', 'completed');
-        const hideBtn = document.createElement('button');
-        hideBtn.innerText = 'Hide';
-        hideBtn.classList.add('hide-btn');
-        hideBtn.onclick = hideTask;
-        taskItem.appendChild(hideBtn);
-      } else {
-        taskItem.classList.add('task');
-        taskItem.onclick = toggleTask;
+    
+    // Marcar como concluído ou não concluído
+    taskElement.addEventListener('click', () => {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      renderTasks();
+    });
+    
+    // Editar tarefa
+    taskElement.addEventListener('dblclick', () => {
+      const newText = prompt('Editar tarefa:', task.text);
+      if (newText !== null) {
+        tasks[index].text = newText;
+        saveTasks();
+        renderTasks();
       }
-      taskList.appendChild(taskItem);
-    }
-
-    function addTask() {
-      const taskText = taskInput.value.trim();
-      if (taskText === '') return;
-
-      tasks.push({ text: taskText, completed: false });
+    });
+    
+    // Excluir tarefa
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = '&#128465;'; // Lixeira emoji
+    deleteButton.classList.add('delete');
+    deleteButton.addEventListener('click', (event) => {
+      event.stopPropagation(); // Evitar que a tarefa seja marcada como concluída ao clicar no botão de excluir
+      tasks.splice(index, 1);
       saveTasks();
-      renderTask(taskText);
-      taskInput.value = '';
-    }
+      renderTasks();
+    });
+    taskElement.appendChild(deleteButton);
+    
+    taskList.appendChild(taskElement);
+  });
+}
 
-    function toggleTask(event) {
-      const taskItem = event.target;
-      taskItem.classList.toggle('completed');
-      const taskText = taskItem.innerText;
-      tasks = tasks.map(task => {
-        if (task.text === taskText) {
-          task.completed = !task.completed;
-        }
-        return task;
-      });
-      saveTasks();
-    }
+function addTask() {
+  const taskInput = document.getElementById('task-input');
+  const text = taskInput.value.trim();
+  if (text !== '') {
+    tasks.push({ text, completed: false });
+    saveTasks();
+    taskInput.value = '';
+    renderTasks();
+  }
+}
 
-    function hideTask(event) {
-      const taskItem = event.target.parentNode;
-      const taskText = taskItem.innerText;
-      tasks = tasks.filter(task => task.text !== taskText);
-      taskList.removeChild(taskItem);
-      saveTasks();
-    }
+function hideCompletedTasks() {
+  tasks = tasks.filter(task => !task.completed);
+  saveTasks();
+  renderTasks();
+}
+
+renderTasks();
